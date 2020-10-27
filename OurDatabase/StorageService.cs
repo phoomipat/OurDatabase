@@ -11,8 +11,7 @@ namespace OurDatabase
     {
         private int objectByteLength;
         private readonly Stream stream;
-        public GenericNode<TKey, TData> First;
-        public int Count;
+        public int Count => (int) stream.Length/objectByteLength;
         
         public StorageService(string indexName)
         {
@@ -23,9 +22,8 @@ namespace OurDatabase
         
         public void InitData()
         {
-            var result = ReadAll();
-            First = ReadAll().FirstOrDefault();
-            Count = result.Length;
+            // var result = ReadAll();
+            // Count = result.Length;
         }
 
         private void SetObjectByteLength()

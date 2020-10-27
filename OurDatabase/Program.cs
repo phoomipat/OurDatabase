@@ -28,15 +28,15 @@ namespace OurDatabase
                     {
                         case 1:
                             Console.WriteLine("Type your data and press enter");
-                            magicTable.AddData(new Person(int.Parse(PrintRead("Id:")), PrintRead("Name:"), int.Parse(PrintRead("Age:"))));
-                            // try
-                            // {
-                            //     magicTable.AddData(new Person(int.Parse(PrintRead("Id:")), PrintRead("Name:"), int.Parse(PrintRead("Age:"))));
-                            // }
-                            // catch (Exception e)
-                            // {
-                            //     Console.WriteLine(e.Message);
-                            // }
+                            // magicTable.AddData(new Person(int.Parse(PrintRead("Id:")), PrintRead("Name:"), int.Parse(PrintRead("Age:"))));
+                            try
+                            {
+                                magicTable.AddData(new Person(int.Parse(PrintRead("Id:")), PrintRead("Name:"), int.Parse(PrintRead("Age:"))));
+                            }
+                            catch (Exception e)
+                            {
+                                Console.WriteLine(e.Message);
+                            }
                             
                             break;
                         case 2:

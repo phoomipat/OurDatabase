@@ -9,10 +9,11 @@ namespace OurDatabase
 {
     public class GenericTree<TKey, TData>
     {
-        private GenericNode<TKey, TData> First => storageService.First;
+        private GenericNode<TKey, TData> First => DataCount != 0 ? storageService.ReadAt(0) : null;
+        private int DataCount => storageService.Count;
         private readonly Func<TKey, TKey, int> comparer;
         private readonly StorageService<TKey, TData> storageService;
-        private int LatestIndex => storageService.Count - 1;
+        
 
         public GenericTree(string indexName, Func<TKey, TKey, int> comparer)
         {
@@ -20,30 +21,23 @@ namespace OurDatabase
             this.storageService = new StorageService<TKey, TData>(indexName);
         }
 
-        public void AddData(TKey key, TData data)
-        {
-            storageService.Count++;
-            if (storageService.First == null)
-            {
-                storageService.First = new GenericNode<TKey, TData>(key, data, LatestIndex);
-                storageService.WriteAtIndex(storageService.First, LatestIndex);
-                return;
-            }
-            AddData(storageService.First, key, data);
-        }
+        public void AddData(TKey key, TData data) => AddData(First, key, data);
+        public GenericNode<TKey, TData> Search(TKey searchKey) => Search(First, searchKey);
+        
 
         private int AddData(GenericNode<TKey, TData> cur, TKey key, TData data)
         {
             if (cur == null)
             {
-                storageService.WriteAtIndex(new GenericNode<TKey, TData>(key, data, LatestIndex), LatestIndex);
-                return LatestIndex;
+                var writtenIndex = DataCount;
+                storageService.WriteAtIndex(new GenericNode<TKey, TData>(key, data, DataCount), DataCount);
+                return writtenIndex;
             }
                 
             if (comparer(key, cur.Key) <= 0)
             { 
                 var index = AddData( storageService.ReadAt(cur.LeftPosition), key, data);
-                if (index == LatestIndex)
+                if (index == DataCount - 1)
                 {
                     cur.LeftPosition = index;
                     storageService.WriteAtIndex(cur, cur.NodePosition);
@@ -52,7 +46,7 @@ namespace OurDatabase
             else
             {
                 var index = AddData(storageService.ReadAt(cur.RightPosition), key, data);
-                if (index == LatestIndex)
+                if (index == DataCount - 1)
                 {
                     cur.RightPosition = index;
                     storageService.WriteAtIndex(cur, cur.NodePosition);
@@ -60,12 +54,7 @@ namespace OurDatabase
             }
             return cur.NodePosition;
         }
-
-        public GenericNode<TKey, TData> Search(TKey searchKey)
-        {
-            return Search(First, searchKey);
-        }
-
+        
         private GenericNode<TKey, TData> Search(GenericNode<TKey, TData> cur, TKey searchKey)
         {
             if (cur == null)
